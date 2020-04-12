@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -41,19 +41,19 @@ const Ingredients = () => {
 	// const [ isLoading, setIsloading ] = useState(false);
 	// const [ error, setError ] = useState();
 
-	useEffect(
-		() => {
-			console.log('Rendering Ingredients', userIngredients);
-		},
-		[ userIngredients ]
-	);
+	// useEffect(
+	// 	() => {
+	// 		console.log('Rendering Ingredients', userIngredients);
+	// 	},
+	// 	[ userIngredients ]
+	// );
 
 	const filteredIngredientHandler = useCallback(filteredIngredients => {
 		// setUserIngredients(filteredIngredients);
 		dispatch({ type: 'SET', ingredients: filteredIngredients });
 	}, []);
 
-	const addIngredientHandle = ingredient => {
+	const addIngredientHandle = useCallback(ingredient => {
 		dispatchHttp({ type: 'SEND' });
 		fetch('https://ingredients-using-hooks.firebaseio.com/ingredients.json', {
 			method: 'POST',
@@ -74,9 +74,9 @@ const Ingredients = () => {
 					ingredient: { id: responseData.name, ...ingredient }
 				});
 			});
-	};
+	}, []);
 
-	const onRemoveIngredient = ingredientId => {
+	const onRemoveIngredient = useCallback(ingredientId => {
 		dispatchHttp({ type: 'SEND' });
 		// return setUserIngredients(userIngredients.filter(ingredient => ingredient.id !== ingredientId));
 		fetch(`https://ingredients-using-hooks.firebaseio.com/ingredients/${ingredientId}.json`, {
@@ -95,11 +95,18 @@ const Ingredients = () => {
 					errorMessage: 'Something went wrong with the Deleting the request'
 				});
 			});
-	};
+	}, []);
 
-	const clearError = () => {
+	const clearError = useCallback(() => {
 		dispatchHttp({ type: 'CLEAR' });
-	};
+	}, []);
+
+	const ingredientList = useMemo(
+		() => {
+			return <IngredientList ingredients={userIngredients} onRemoveItem={onRemoveIngredient} />;
+		},
+		[ userIngredients, onRemoveIngredient ]
+	);
 
 	return (
 		<div className='App'>
@@ -109,7 +116,7 @@ const Ingredients = () => {
 
 			<section>
 				<Search onLoadIngredients={filteredIngredientHandler} />
-				<IngredientList ingredients={userIngredients} onRemoveItem={onRemoveIngredient} />
+				{ingredientList}
 			</section>
 		</div>
 	);
