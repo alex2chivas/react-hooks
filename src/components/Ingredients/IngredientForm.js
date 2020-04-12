@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import Card from '../UI/Card';
 import './IngredientForm.css';
-import ingredientsApiCall from '../../api/ingredients'
+import ingredientsApiCall from '../../api/ingredients';
 
 const IngredientForm = React.memo(props => {
 	const [ enteredTitle, setEnteredTitle ] = useState('');
@@ -10,8 +10,11 @@ const IngredientForm = React.memo(props => {
 
 	const submitHandler = async event => {
 		event.preventDefault();
-		const response = await ingredientsApiCall.post('/ingredients', { title: enteredTitle, amount: enteredAmount })
-		props.onAddIngredient(response.data)
+		const response = await ingredientsApiCall.post('/ingredients', {
+			title: enteredTitle,
+			amount: enteredAmount
+		});
+		props.onAddIngredient(response.data);
 	};
 
 	return (
