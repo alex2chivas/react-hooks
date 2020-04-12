@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 
 import Card from '../UI/Card';
 import './IngredientForm.css';
+import ingredientsApiCall from '../../api/ingredients'
 
 const IngredientForm = React.memo(props => {
 	const [ enteredTitle, setEnteredTitle ] = useState('');
 	const [ enteredAmount, setEnteredAmount ] = useState('');
 
-	const submitHandler = event => {
+	const submitHandler = async event => {
 		event.preventDefault();
-		props.onAddIngredient({ title: enteredTitle, amount: enteredAmount });
+		const response = await ingredientsApiCall.post('/ingredients', { title: enteredTitle, amount: enteredAmount })
+		props.onAddIngredient(response.data)
 	};
 
 	return (
